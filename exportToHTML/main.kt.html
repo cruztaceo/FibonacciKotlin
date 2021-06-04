@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>main.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #080808;}
+.s1 { color: #0033b3;}
+.s2 { color: #1750eb;}
+.s3 { color: #067d17;}
+.s4 { color: #0037a6;}
+.s5 { color: #8c8c8c; font-style: italic;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">import kotlinx.coroutines.*</span>
+<span class="s0">import kotlin.math.pow</span>
+<span class="s0">import kotlin.math.roundToLong</span>
+<span class="s0">import kotlin.math.sqrt</span>
+<span class="s0">import kotlin.system.exitProcess</span>
+
+<span class="s0">suspend </span><span class="s1">fun </span><span class="s0">main() = coroutineScope {</span>
+    <span class="s1">val </span><span class="s0">n = </span><span class="s2">30</span>
+    <span class="s1">val </span><span class="s0">iterative = async {</span>
+        <span class="s0">println(</span><span class="s3">&quot;Fibonacci Iterative:   Nth number: </span><span class="s4">$</span><span class="s0">n</span><span class="s3">, Result = </span><span class="s4">${</span><span class="s0">fibonacciIterative(n)</span><span class="s4">}</span><span class="s3">&quot;</span><span class="s0">)</span>
+    <span class="s0">}</span>
+    <span class="s1">val </span><span class="s0">recursive = async {</span>
+        <span class="s0">println(</span><span class="s3">&quot;Fibonacci Recursive:   Nth number: </span><span class="s4">$</span><span class="s0">n</span><span class="s3">, Result = </span><span class="s4">${</span><span class="s0">fibonacciRecursive(n)</span><span class="s4">}</span><span class="s3">&quot;</span><span class="s0">)</span>
+    <span class="s0">}</span>
+    <span class="s1">val </span><span class="s0">closedForm = async {</span>
+        <span class="s0">println(</span><span class="s3">&quot;Fibonacci Closed Form: Nth number: </span><span class="s4">$</span><span class="s0">n</span><span class="s3">, Result = </span><span class="s4">${</span><span class="s0">fibonacciClosedForm(n)</span><span class="s4">}</span><span class="s3">&quot;</span><span class="s0">)</span>
+    <span class="s0">}</span>
+    <span class="s1">val </span><span class="s0">divideAndConquer = async {</span>
+        <span class="s0">println(</span><span class="s3">&quot;Fibonacci Divide and Conquer: Nth number: </span><span class="s4">$</span><span class="s0">n</span><span class="s3">, Result = </span><span class="s4">${</span><span class="s0">fibonacciDivideAndConquer(n)</span><span class="s4">}</span><span class="s3">&quot;</span><span class="s0">)</span>
+    <span class="s0">}</span>
+
+    <span class="s1">try </span><span class="s0">{</span>
+        <span class="s0">withTimeout(</span><span class="s2">3000L</span><span class="s0">){</span>
+            <span class="s0">iterative.await()</span>
+            <span class="s0">recursive.await()</span>
+            <span class="s0">closedForm.await()</span>
+            <span class="s0">divideAndConquer.await()</span>
+            <span class="s3">&quot;Done&quot;</span>
+        <span class="s0">}</span>
+    <span class="s0">} catch (e: TimeoutCancellationException){</span>
+        <span class="s0">exitProcess(</span><span class="s2">1</span><span class="s0">)</span>
+    <span class="s0">}</span>
+    <span class="s0">println(</span><span class="s3">&quot;Done&quot;</span><span class="s0">)</span>
+
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">fibonacciIterative(n: Int): Long {</span>
+    <span class="s1">var </span><span class="s0">firstNumber = </span><span class="s2">0L</span>
+    <span class="s1">var </span><span class="s0">secondNumber = </span><span class="s2">1L</span>
+    <span class="s1">var </span><span class="s0">result = </span><span class="s2">0L</span>
+
+    <span class="s1">if </span><span class="s0">(n == </span><span class="s2">0</span><span class="s0">)</span>
+        <span class="s1">return </span><span class="s2">0L</span>
+    <span class="s1">else if </span><span class="s0">(n == </span><span class="s2">1</span><span class="s0">)</span>
+        <span class="s1">return </span><span class="s2">1L</span>
+
+    <span class="s1">for </span><span class="s0">(i </span><span class="s1">in </span><span class="s2">2</span><span class="s0">..n) {</span>
+        <span class="s0">result = firstNumber + secondNumber</span>
+        <span class="s0">firstNumber = secondNumber</span>
+        <span class="s0">secondNumber = result</span>
+    <span class="s0">}</span>
+    <span class="s1">return </span><span class="s0">result</span>
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">fibonacciRecursive(n: Int): Long {</span>
+    <span class="s1">if </span><span class="s0">(n == </span><span class="s2">0</span><span class="s0">) {</span>
+        <span class="s1">return </span><span class="s2">0</span>
+    <span class="s0">} </span><span class="s1">else if </span><span class="s0">(n == </span><span class="s2">1</span><span class="s0">) {</span>
+        <span class="s1">return </span><span class="s2">1</span>
+    <span class="s0">}</span>
+    <span class="s1">return </span><span class="s0">fibonacciRecursive(n - </span><span class="s2">1</span><span class="s0">) + fibonacciRecursive(n - </span><span class="s2">2</span><span class="s0">)</span>
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">fibonacciClosedForm(n: Int): Long {</span>
+    <span class="s1">if </span><span class="s0">(n == </span><span class="s2">0</span><span class="s0">) {</span>
+        <span class="s1">return </span><span class="s2">0</span>
+    <span class="s0">} </span><span class="s1">else if </span><span class="s0">(n == </span><span class="s2">1</span><span class="s0">) {</span>
+        <span class="s1">return </span><span class="s2">1</span>
+    <span class="s0">}</span>
+    <span class="s1">return </span><span class="s0">((</span><span class="s2">1 </span><span class="s0">/ sqrt(</span><span class="s2">5.0</span><span class="s0">) * ((</span><span class="s2">1 </span><span class="s0">+ sqrt(</span><span class="s2">5.0</span><span class="s0">)) / </span><span class="s2">2</span><span class="s0">).pow(n)) - (</span><span class="s2">1 </span><span class="s0">/ sqrt(</span><span class="s2">5.0</span><span class="s0">) * ((</span><span class="s2">1 </span><span class="s0">- sqrt(</span><span class="s2">5.0</span><span class="s0">)) / </span><span class="s2">2</span><span class="s0">).pow(n))).roundToLong()</span>
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">fibonacciDivideAndConquer(n: Int): Long {</span>
+    <span class="s1">if </span><span class="s0">(n == </span><span class="s2">0</span><span class="s0">) {</span>
+        <span class="s1">return </span><span class="s2">0</span>
+    <span class="s0">}</span>
+    <span class="s1">val </span><span class="s0">matrix = arrayOf(longArrayOf(</span><span class="s2">1</span><span class="s0">, </span><span class="s2">1</span><span class="s0">), longArrayOf(</span><span class="s2">1</span><span class="s0">, </span><span class="s2">0</span><span class="s0">))</span>
+
+    <span class="s1">return </span><span class="s0">matrixExponentiation(matrix, n)[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">1</span><span class="s0">]</span>
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">matrixExponentiation(inputMatrix: Array&lt;LongArray&gt;, n: Int): Array&lt;LongArray&gt; {</span>
+    <span class="s1">val </span><span class="s0">matrix = arrayOf(longArrayOf(</span><span class="s2">1</span><span class="s0">, </span><span class="s2">1</span><span class="s0">), longArrayOf(</span><span class="s2">1</span><span class="s0">, </span><span class="s2">0</span><span class="s0">))</span>
+    <span class="s5">//f(n)  = 0 1 1 2 3 5</span>
+    <span class="s5">//n     = 0 1 2 3 4 5</span>
+    <span class="s1">if </span><span class="s0">(n &gt; </span><span class="s2">1</span><span class="s0">) {</span>
+        <span class="s0">multiplyMatrix(matrixExponentiation(inputMatrix, n / </span><span class="s2">2</span><span class="s0">), inputMatrix)</span>
+
+        <span class="s1">if </span><span class="s0">(n.mod(</span><span class="s2">2</span><span class="s0">) != </span><span class="s2">0</span><span class="s0">) {</span>
+            <span class="s0">multiplyMatrix(inputMatrix, matrix)</span>
+        <span class="s0">}</span>
+    <span class="s0">}</span>
+    <span class="s1">return </span><span class="s0">inputMatrix</span>
+<span class="s0">}</span>
+
+<span class="s1">fun </span><span class="s0">multiplyMatrix(matrixA: Array&lt;LongArray&gt;, matrixB: Array&lt;LongArray&gt;): Array&lt;LongArray&gt; {</span>
+
+    <span class="s1">val </span><span class="s0">x0 = (matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] * matrixB[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">0</span><span class="s0">]) + (matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">])</span>
+    <span class="s1">val </span><span class="s0">x1 = (matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">]) + (matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">1</span><span class="s0">])</span>
+    <span class="s1">val </span><span class="s0">y0 = (matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] * matrixB[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">0</span><span class="s0">]) + (matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">])</span>
+    <span class="s1">val </span><span class="s0">y1 = (matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">]) + (matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] * matrixB[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">1</span><span class="s0">])</span>
+
+    <span class="s0">matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] = x0</span>
+    <span class="s0">matrixA[</span><span class="s2">0</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] = x1</span>
+    <span class="s0">matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">0</span><span class="s0">] = y0</span>
+    <span class="s0">matrixA[</span><span class="s2">1</span><span class="s0">][</span><span class="s2">1</span><span class="s0">] = y1</span>
+
+    <span class="s1">return </span><span class="s0">matrixA</span>
+<span class="s0">}</span></pre>
+</body>
+</html>

@@ -18,9 +18,6 @@ suspend fun main() = coroutineScope {
     val divideAndConquer = async {
         println("Fibonacci Divide and Conquer: Nth number: $n, Result = ${fibonacciDivideAndConquer(n)}")
     }
-    val exponentiation = async {
-        println("Exponentiation by Squaring: 2 ^ $n, Result = ${exponentiationBySquaring(2, n)}")
-    }
 
     try {
         withTimeout(3000L){
@@ -28,7 +25,6 @@ suspend fun main() = coroutineScope {
             recursive.await()
             closedForm.await()
             divideAndConquer.await()
-            exponentiation.await()
             "Done"
         }
     } catch (e: TimeoutCancellationException){
@@ -110,12 +106,4 @@ fun multiplyMatrix(matrixA: Array<LongArray>, matrixB: Array<LongArray>): Array<
     matrixA[1][1] = y1
 
     return matrixA
-}
-
-fun exponentiationBySquaring(x: Int, n: Int): Int {
-    return if (n.mod(2) == 0) {
-        x.toDouble().pow(n / 2).pow(2).toInt()
-    } else {
-        x * x.toDouble().pow(n - 1).toInt()
-    }
 }
